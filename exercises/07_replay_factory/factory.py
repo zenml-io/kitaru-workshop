@@ -128,6 +128,15 @@ def aggregate(rows_json: str, baseline: str, candidate: str, samples: int) -> st
         for r in rows
         if r["baseline"]["good"] and not all(run["good"] for run in r["candidate_runs"])
     ]
+    # Per-case breakdown so the report shows WHICH cases moved, not just totals.
+    per_case = [
+        {
+            "id": r["id"],
+            "baseline": "good" if r["baseline"]["good"] else "bad",
+            "candidate": "good" if all(run["good"] for run in r["candidate_runs"]) else "bad",
+        }
+        for r in rows
+    ]
     report = {
         "cases": n,
         "samples": k,
@@ -137,6 +146,7 @@ def aggregate(rows_json: str, baseline: str, candidate: str, samples: int) -> st
         "candidate_pass1": round(cand_pass1, 3),
         "candidate_passk": round(cand_passk, 3),
         "regressions": regressions,
+        "per_case": per_case,
         # Decision rule: ship the cheaper model only if it adds no regressions
         # at pass^k. Cost lives in the dashboard (per-call, auto-logged).
         "verdict": "SHIP" if not regressions else "DO NOT SHIP",
@@ -186,4 +196,27 @@ if __name__ == "__main__":
     print(f"  regressions:         {len(report['regressions'])}")
     for r in report["regressions"]:
         print(f"    - [{r['id']}] {r['why']}")
+
+    # Per-case breakdown — see which cases moved, not just the totals.
+    print("\n  Per-case (baseline → candidate):")
+    for c in report["per_case"]:
+        moved = "  ⚠ REGRESSED" if (c["baseline"] == "good" and c["candidate"] == "bad") else ""
+        print(f"    [{c['id']:<22}] {c['baseline']:>4} → {c['candidate']:<4}{moved}")
+
     print(f"\n  VERDICT: {report['verdict']}")
+
+    # This demo judges one dimension (policy correctness) on a model swap.
+    # In production you'd run this SAME replay-and-judge loop on more changes,
+    # and score more dimensions — that's the real "factory":
+    print(
+        "\n  In production, replay-regress more than a model swap:\n"
+        "    • prompt edits · model-version bumps · provider/open-model swaps\n"
+        "    • RAG re-index (new chunking/embeddings) · tool/schema changes\n"
+        "    • temperature/params · new guardrails · changed business rules\n"
+        "  …and score beyond pass/fail:\n"
+        "    • outcome/state checks & correct tool calls (more trustworthy than a judge)\n"
+        "    • safety/hallucination · grounding/citations · output/JSON validity\n"
+        "    • cost & latency · reliability via pass^k (not n=1)\n"
+        "  Tip: every 'bad' the judge catches → add it to cases.jsonl (your growing\n"
+        "  regression set). Replay kills bad candidates cheaply; confirm winners live."
+    )
