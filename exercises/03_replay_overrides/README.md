@@ -31,8 +31,7 @@ metrics. Before any change ships, you want *evidence*.
 4. Same override from the CLI (put **real** text in the override, not the
    placeholder!):
    ```bash
-   kitaru executions replay <EXEC_ID> --from extract_mentions \
-     --overrides '{"checkpoint.fetch_answers": "Asana and Linear lead; ClickUp is rising fast for hybrid teams."}'
+   kitaru executions replay <EXEC_ID> --from extract_mentions --overrides '{"checkpoint.fetch_answers": "Asana and Linear lead; ClickUp is rising fast for hybrid teams."}'
    ```
    The CLI `replay` **launches a new execution and returns — it does not print
    the result.** See the output via the dashboard, or:
