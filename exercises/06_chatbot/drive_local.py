@@ -22,6 +22,7 @@ from typing import Any
 from uuid import uuid4
 
 from kitaru.client import Execution, ExecutionStatus, KitaruClient
+from kitaru.errors import KitaruAmbiguousFlowResultError
 
 try:
     from .chatbot import (
@@ -37,16 +38,28 @@ except ImportError:
     )
 
 FLOW_NAME = "chatbot"
+# The chatbot is an LLM, so the exact number of turns is non-deterministic.
+# Supply a few more "wrap up" messages than a short chat needs and let the
+# driver stop cleanly whenever the model ends the conversation (see
+# ConversationEnded). Trailing "bye"s are harmless: unused messages are ignored.
 DEFAULT_MESSAGES = (
     "Hello! Please answer in one short sentence.",
-    "Thanks, bye.",
-    "Bye.",
+    "Thanks — that's all I needed.",
+    "Goodbye!",
+    "bye",
+    "bye",
 )
 DEFAULT_WAIT_TIMEOUT_SECONDS = 300.0
 DEFAULT_FINISH_TIMEOUT_SECONDS = 120.0
 DEFAULT_POLL_INTERVAL_SECONDS = 1.0
 DEFAULT_WAIT_SEARCH_LIMIT = 50
 _POSITIVE_SECONDS_MESSAGE = "must be a finite number greater than 0"
+
+
+class ConversationEnded(Exception):
+    """Raised internally when the chatbot completes before all scripted
+    messages are sent. That's a normal, successful outcome for a stochastic
+    chatbot — the driver catches it and stops feeding messages."""
 
 
 @dataclass(frozen=True)
@@ -235,6 +248,10 @@ def _find_pending_wait_on_execution(
     if match is not None:
         return match, lookup_error
     if _is_terminal_execution(execution):
+        if execution.status == ExecutionStatus.COMPLETED:
+            # The model wrapped up the conversation before we used every
+            # scripted message. That's success, not an error.
+            raise ConversationEnded(exec_id)
         raise RuntimeError(
             f"Execution {exec_id} reached terminal status "
             f"{execution.status.value!r} before another chatbot wait appeared."
@@ -454,16 +471,21 @@ def drive_chatbot(
     print(f"Started local chatbot session {session_label!r}.")
 
     for message in messages:
-        match = wait_for_pending_wait(
-            client=client,
-            session_label=session_label,
-            state=state,
-            known_exec_id=exec_id,
-            runner_thread=runner_thread,
-            ignored_wait_ids=answered_wait_ids,
-            timeout_seconds=wait_timeout_seconds,
-            poll_interval_seconds=poll_interval_seconds,
-        )
+        try:
+            match = wait_for_pending_wait(
+                client=client,
+                session_label=session_label,
+                state=state,
+                known_exec_id=exec_id,
+                runner_thread=runner_thread,
+                ignored_wait_ids=answered_wait_ids,
+                timeout_seconds=wait_timeout_seconds,
+                poll_interval_seconds=poll_interval_seconds,
+            )
+        except ConversationEnded:
+            print("\nChatbot ended the conversation; remaining scripted "
+                  "messages were not needed.")
+            break
         exec_id = match.exec_id
 
         label = f"turn {match.turn}" if match.turn is not None else match.wait_name
@@ -488,7 +510,20 @@ def drive_chatbot(
     if state.handle is None:
         raise RuntimeError("The background chatbot thread finished without a handle.")
 
-    result = state.handle.wait()
+    try:
+        result = state.handle.wait()
+    except KitaruAmbiguousFlowResultError:
+        # Expected for agent chatbots: the adapter emits one terminal checkpoint
+        # per model call (plus a per-turn `persist_history`), so Kitaru can't
+        # auto-extract a single flow return value. The run completed fine — the
+        # conversation's durable state is the `history` artifact. Kitaru's own
+        # docs say external callers may catch this public error and recover.
+        result = None
+        print(
+            "\n(No single flow return value to extract — that's expected for an "
+            "agent chatbot. The full conversation is saved in the `history` "
+            "artifact; the deployed UI rehydrates from it.)"
+        )
     print("\nConversation ended.")
     return result
 

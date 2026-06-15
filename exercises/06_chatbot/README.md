@@ -25,18 +25,36 @@ upgrade). One PydanticAI agent with a single `say_and_wait` tool:
 | `drive_local.py` | Scripted non-interactive driver (flow in background thread, input from foreground) |
 | `history_artifacts.py` | Helpers to pick the best `history` artifact for session rehydration |
 
+> **Prerequisite (local *and* deployed):** create the `openai-creds` secret.
+> `chatbot.py` sets `secret_environment_from=["openai-creds"]` on its image, and
+> Kitaru resolves that secret even for **local** runs — without it the flow fails
+> to compile with `No secret found with name 'openai-creds'`. One-time:
+> ```bash
+> kitaru secrets set openai-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
+> ```
+
 ## How to run (three ways, from the upstream README)
 
 1. **Deployed + Gradio UI** (production-shaped, what the instructor demos):
    `kitaru deploy chatbot.py:chatbot --tag prod --stack <remote-stack> --exclusive`,
-   secret named `openai-creds` for the pod's `OPENAI_API_KEY`, then `python ui.py`.
+   the `openai-creds` secret for the pod's `OPENAI_API_KEY`, then `python ui.py`.
 2. **Direct terminal**: `python chatbot.py` — quick interactive smoke test.
 3. **Scripted**: `python drive_local.py` — background flow + foreground driver.
+   The driver tolerates the LLM ending the chat early (extra scripted messages
+   are ignored) — pass your own messages as args if you want a longer chat.
 
 Anti-pattern to know: `handle.wait()` then `executions.input(...)` in one
 thread deadlocks by design — `handle.wait()` waits for the *whole* execution,
 which is waiting for the input you haven't sent. Answer waits from a second
 actor (UI, CLI, or the driver script).
+
+> **`handle.wait()` on an agent chatbot raises `KitaruAmbiguousFlowResultError`**
+> (kitaru 0.16). The adapter emits one terminal checkpoint per model call plus a
+> `persist_history` per turn, so Kitaru can't auto-pick a single return value
+> (dynamic flows have no static output spec → it falls back to terminal-step
+> scanning and finds many). This is **expected for agent flows** — the
+> conversation's durable state is the `history` artifact, not a return value.
+> `drive_local.py` catches this and the deployed UI rehydrates from `history`.
 
 ## The streaming upgrade (verified live, kitaru 0.15.0)
 

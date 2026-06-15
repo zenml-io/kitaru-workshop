@@ -53,6 +53,20 @@ kitaru model register cheap --model openai/gpt-5-nano
 (Any two models of different cost tiers work — the point is the price gap.
 Ollama users: `ollama/qwen3.5` works too.)
 
+Also create a **secret** named `openai-creds` holding your key. The chatbot
+(Exercise 6) declares `secret_environment_from=["openai-creds"]` so the deployed
+pod gets the key — and Kitaru resolves that secret even for **local** runs, so
+the secret must exist or the chatbot flow fails to compile with
+`No secret found with name 'openai-creds'`:
+
+```bash
+kitaru secrets set openai-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
+```
+
+(Anthropic users: add `--ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"` too. You can
+bind the aliases above to it with `--secret openai-creds` on `model register`,
+but exercises 2–5 also fall back to the key in your shell environment.)
+
 ## 5. Smoke test
 
 With your venv active (from step 2):

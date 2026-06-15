@@ -137,6 +137,13 @@ def chatbot(session_label: str | None = None) -> str:
     )
 
     conv = Conversation()
+    # NOTE: the conversation's durable state is the per-turn `history` artifact,
+    # not this return value. Because the adapter emits one terminal checkpoint
+    # per model call (plus a `persist_history` per turn), Kitaru cannot
+    # auto-extract a single flow result — `handle.wait()` raises
+    # KitaruAmbiguousFlowResultError. Callers that need the final text should
+    # load the latest `history` artifact (see drive_local.py / ui.py), or catch
+    # that error. The deployed UI does exactly this.
     return kitaru_agent.run_sync(
         "Begin the conversation by greeting the user.",
         deps=conv,
