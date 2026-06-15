@@ -16,10 +16,18 @@ metrics. Before any change ships, you want *evidence*.
    - Replay (a): same model, **edited upstream answer** injected via
      `overrides={"checkpoint.fetch_answers": ...}`
    - Replay (b): same input, **cheaper model alias**.
-3. `kitaru executions list` → open all three in the dashboard. Compare:
-   - which checkpoints were cached vs re-executed (only the replay root + descendants run)
-   - per-call token cost: `strong` vs `cheap`
+3. **The token diff prints right in the replay output** — each line shows
+   `model=… tokens in/out/total=…` (e.g. `strong` 96/201/297 vs `cheap`
+   86/1971/2057; the cheaper model often *rambles*, so cheaper ≠ fewer tokens).
+   Then `kitaru executions list` → open all three in the dashboard to compare:
+   - which checkpoints were **cached vs re-executed** (only the replay root +
+     descendants run — `fetch_answers` is skipped)
+   - **per-call tokens** on the `extract_mentions` checkpoint, `strong` vs `cheap`
    - output quality, side by side
+
+   > 💲 Dollar cost shows only when Kitaru has pricing for the model. For
+   > unpriced models (e.g. `gpt-5.2`/`gpt-5-nano`) cost is blank — **tokens** are
+   > the reliable comparison, and they're always tracked.
 4. Same thing from the CLI:
    ```bash
    kitaru executions replay <EXEC_ID> --from extract_mentions \
