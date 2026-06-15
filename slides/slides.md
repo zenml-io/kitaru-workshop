@@ -124,6 +124,7 @@ kitaru model register strong --model openai/gpt-5.2   --secret <your-key-secret>
 kitaru model register cheap  --model openai/gpt-5-nano --secret <your-key-secret>
 ```
 
+*Tried Kitaru/ZenML before? `kitaru clean all` first to wipe stale local state.*
 *Stuck? Flag an instructor — Exercise 1 needs no key, so start there.*
 
 ---

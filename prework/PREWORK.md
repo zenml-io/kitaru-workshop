@@ -63,12 +63,28 @@ python exercises/01_first_flow/flow.py   # should complete and print an executio
 
 If that prints an execution ID, you're ready. 🎉
 
+## Already installed an older Kitaru/ZenML? Start clean.
+
+If you tried Kitaru (or ZenML) before, an old local database/config can clash
+with this version and throw confusing errors (stale stack, schema mismatch).
+Wipe local state and re-init:
+
+```bash
+kitaru clean all      # resets project + global local Kitaru/ZenML state
+# then: kitaru init && kitaru login
+```
+
+`kitaru clean` has `all` / `global` / `project` — `all` is the clean slate.
+(Equivalent older command: `zenml clean`.) This only touches *local* state on
+your machine; it doesn't delete anything on a remote server.
+
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `kitaru: command not found` | `pip show kitaru` — check your PATH / venv is active |
-| Server won't start | Port conflict — check nothing else owns the default port; `kitaru status` for details |
-| Corporate laptop blocks Docker | You can do Modules 1–4 without Docker; Module 5 is demo-only |
+| `kitaru: command not found` | Venv not active — `source .venv/bin/activate` (or use `uv run`) |
+| Stale stack / schema / DB error | `kitaru clean all`, then `kitaru init && kitaru login` (see above) |
+| Server won't start | Port conflict — `kitaru status` for details; nothing else on the default port |
+| Corporate laptop blocks Docker | Modules 1–2 need no Docker; the deploy/fan-out demos are instructor-run |
 
 Questions → workshop Slack channel. See you there!
