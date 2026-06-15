@@ -44,8 +44,11 @@ def fetch_answers(category: str) -> str:
     return CANNED_ANSWER
 
 
-@checkpoint
+@checkpoint(cache=False)
 def extract_mentions(answer: str, model_alias: str) -> str:
+    # cache=False: this is the replay TARGET — it must re-execute on every
+    # replay so you see the model swap / edited-input actually run (the demo's
+    # whole point). The upstream `fetch_answers` stays cached.
     # kitaru.llm routes through a registered alias; tokens + cost auto-logged.
     # Signature: kitaru.llm(prompt, *, model=..., system=..., temperature=...,
     # max_tokens=..., name=...) -> str  (verified against kitaru 0.15.0)

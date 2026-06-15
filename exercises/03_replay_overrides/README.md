@@ -28,10 +28,17 @@ metrics. Before any change ships, you want *evidence*.
    > 💲 Dollar cost shows only when Kitaru has pricing for the model. For
    > unpriced models (e.g. `gpt-5.2`/`gpt-5-nano`) cost is blank — **tokens** are
    > the reliable comparison, and they're always tracked.
-4. Same thing from the CLI:
+4. Same override from the CLI (put **real** text in the override, not the
+   placeholder!):
    ```bash
    kitaru executions replay <EXEC_ID> --from extract_mentions \
-     --overrides '{"checkpoint.fetch_answers": "…your edited answer…"}'
+     --overrides '{"checkpoint.fetch_answers": "Asana and Linear lead; ClickUp is rising fast for hybrid teams."}'
+   ```
+   The CLI `replay` **launches a new execution and returns — it does not print
+   the result.** See the output via the dashboard, or:
+   ```bash
+   kitaru executions logs <NEW_EXEC_ID>     # the run's logs
+   kitaru executions get  <NEW_EXEC_ID>     # status + the mentions_report artifact
    ```
 
 ## Rules of the road (these will be on the exam — i.e., in your PoC)
