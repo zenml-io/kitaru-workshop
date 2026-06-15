@@ -45,14 +45,14 @@ The altitude-setter. Earn their respect before touching a keyboard.
 
 `exercises/01_first_flow/` — fast. "This is the floor; then we get to your code."
 
-- `@flow` + `@checkpoint`, run it, **Ctrl+C mid-run, re-run → cached** (the "aha").
+- `@flow` + `@checkpoint`, run it, **run it again → cached** (the "aha"). The
+  slow step is `@checkpoint(cache=False)` so it always re-runs while the rest
+  serves from cache — the lesson lands without needing a mid-run Ctrl+C (which
+  shows the same thing, as a bonus).
 - `kitaru.log()` + `kitaru.save()` (inside checkpoints).
-- **Stacks (1 slide):** a stack = where a flow runs + where artifacts live.
-  `kitaru stack use aws-k8s-stack` → same code on k8s, artifacts in S3. Laptop →
-  Vertex/SageMaker, zero code changes. This is the governance/portability story
-  (the one Siemens & Adeo cared about). Verified across default + local_remote(S3).
 - Don't dwell on flows/checkpoints — they know what a pipeline is. The point is
-  the durability boundary + stack portability.
+  the durability boundary. (Stacks/portability moved to Module 3, where deploy
+  needs them.)
 
 ## 2. Wrap YOUR agent, then replay — 33 min ★ THE CENTERPIECE
 
@@ -66,8 +66,13 @@ The altitude-setter. Earn their respect before touching a keyboard.
 - Honest framing: replay = cheap offline regression filter on your real traffic.
   Cost deltas are hard numbers; quality deltas need n>1; confirm winners live.
 
-## 3. Ship it — 25 min (instructor demo)
+## 3. Ship it — 27 min (instructor demo)
 
+- **Stacks (1 slide, ~2 min):** a stack = where a flow runs + where artifacts
+  live. `kitaru stack use aws-k8s-stack` → the same code from Modules 1–2 on k8s,
+  artifacts in S3. Laptop → Vertex/SageMaker, zero code changes. This is the
+  governance/portability story (the one Siemens & Adeo cared about), and it sets
+  up deploy — deploys are pinned to a stack. Verified across default + local_remote(S3).
 - **Deployments & versions (2 slides, ~7 min)**: `kitaru deploy ... --tag prod
   --stack aws-k8s-stack` → a new **immutable version** (v1, v2 …, never mutated).
   **Tags route, versions don't move**: `prod` → v10; canary = point a tag at a new
@@ -119,9 +124,9 @@ this too simple." The loop:
 | Block | Min | Cumulative |
 |---|---|---|
 | 0 Agents vs workflows (theory) | 13 | 13 |
-| 1 Substrate + stacks (hands-on) | 14 | 27 |
-| 2 Wrap your agent + replay ★ | 33 | 60 |
-| 3 Ship it (deploy/versions + chatbot) | 25 | 85 |
+| 1 Substrate (hands-on) | 12 | 25 |
+| 2 Wrap your agent + replay ★ | 33 | 58 |
+| 3 Ship it (stacks + deploy/versions + chatbot) | 27 | 85 |
 | 4 Capstone: Replay Factory | 15 | 100 |
 | 5 Mapping + close | 20 | 120 |
 

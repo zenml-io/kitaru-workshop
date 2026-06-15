@@ -160,35 +160,21 @@ bounce_triage.run(limit=8).wait()
 
 ---
 
-# The "aha": kill it, run it again
+# The "aha": run it twice
 
-- **Ctrl+C during the slow step.** Then re-run.
-- Completed checkpoints are **served from cache** — only unfinished work re-executes
+- **Just run it again.** Finished checkpoints come back from cache — instantly.
+- `correlate` is marked `cache=False`, so it always re-runs: you *see* the
+  cached steps skip while the expensive one works.
+- Same thing if it **dies mid-run** (Ctrl+C the slow step): completed work is never re-paid.
 
 ```
-Kitaru: Checkpoint `fetch_bounces` cached.
-Kitaru: Checkpoint `classify` cached.
-Kitaru: Execution finished in 1.4s        ← was 11.7s
+Kitaru: Checkpoint `fetch_bounces` cached.     ← instant
+Kitaru: Checkpoint `classify`      cached.     ← instant
+Kitaru: Checkpoint `correlate`     started ... ← cache=False, re-runs
 ```
 
 Also in there: `kitaru.log()` metadata + `kitaru.save()` versioned artifacts
 (*inside* checkpoints — that's the durability boundary).
-
----
-
-# Stacks — same code, runs anywhere
-
-A **stack** = where a flow runs + where its artifacts live.
-
-```bash
-kitaru stack list      # default (local) · local_remote (S3) · aws-k8s-stack
-kitaru stack use aws-k8s-stack
-python flow.py         # same code — now on Kubernetes, artifacts in S3
-```
-
-- Laptop → S3 → Kubernetes / Vertex / SageMaker — **zero code changes**
-- **Governance lives here**: one controlled place that decides where every agent runs
-- Caching & replay work identically on every stack
 
 ---
 
@@ -274,6 +260,24 @@ Upstream checkpoints: cached, never re-paid. Replay root + descendants: re-execu
 # Ship it
 
 Deployments, and the chatbot that dies between turns.
+
+---
+
+# Stacks — same code, runs anywhere
+
+A **stack** = where a flow runs + where its artifacts live. Everything you ran
+on your laptop in Modules 1–2 ships unchanged:
+
+```bash
+kitaru stack list      # default (local) · local_remote (S3) · aws-k8s-stack
+kitaru stack use aws-k8s-stack
+python flow.py         # same code — now on Kubernetes, artifacts in S3
+```
+
+- Laptop → S3 → Kubernetes / Vertex / SageMaker — **zero code changes**
+- **Governance lives here**: one controlled place that decides where every agent runs
+- Caching & replay work identically on every stack
+- Deploys (next slide) are **pinned to a stack** — that's *where* the version runs
 
 ---
 

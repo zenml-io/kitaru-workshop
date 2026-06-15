@@ -5,10 +5,15 @@ message needs a *reason*, not a statistic.
 
 ## Steps
 
-1. Run it: `python flow.py` — note the execution ID it prints.
-2. Run it again, but press **Ctrl+C while `correlate` is sleeping**.
-3. Run it a third time. Watch the logs: `fetch_bounces` and `classify` are
-   **cached** — only `correlate` re-executes. That's durable execution.
+1. Run it: `python flow.py` — note the execution ID it prints (`correlate`
+   sleeps ~10s on purpose).
+2. Run it again. Watch the logs: `fetch_bounces` and `classify` come back
+   **cached** instantly — only `correlate` re-executes. That's durable
+   execution. (`correlate` is marked `@checkpoint(cache=False)` so it always
+   re-runs and the lesson lands every time.)
+3. Bonus — same lesson the hard way: run it and press **Ctrl+C while
+   `correlate` is sleeping**, then re-run. The completed checkpoints are still
+   cached; you never re-pay for finished work.
 4. Explore:
    ```bash
    kitaru executions list
@@ -24,27 +29,9 @@ message needs a *reason*, not a statistic.
 - `kitaru.load("bounce_summary")` from a separate Python REPL — artifacts outlive executions.
 - Change `limit` and observe what caching does with different inputs.
 
-## Bonus: same code, different stack (verified live)
-
-A *stack* is where your flow runs and where artifacts live. Swapping it is one
-command — the flow code doesn't change:
-
-```bash
-kitaru stack list                 # see what's available on your server
-kitaru stack use local_remote     # e.g. local runner + S3 artifact store
-python flow.py                    # same code — artifacts now land in S3
-```
-
-Cloud artifact stores need their integration deps once per environment
-(the error message tells you exactly what):
-
-```bash
-uv pip install 's3fs>2022.3.0,!=2025.3.1' boto3 aws-profile-manager   # for S3
-```
-
-Caching and replay work identically across stacks — checkpoints cache even
-with a remote artifact store. This is how your PoC goes from laptop to cloud
-without touching the code.
+> **Stacks** (where a flow runs + where artifacts live) come later, in
+> Module 3 — that's where "same code, now on the cloud" pays off, next to
+> deployments. Module 1 stays focused on one idea: durable checkpoints.
 
 ## The point
 

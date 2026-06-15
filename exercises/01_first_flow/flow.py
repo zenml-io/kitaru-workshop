@@ -61,12 +61,15 @@ def classify(bounces: list[str]) -> list[dict]:
     return results
 
 
-@checkpoint
+@checkpoint(cache=False)
 def correlate(classified: list[dict]) -> dict:
     """Aggregate — and pretend it's expensive so you have time to Ctrl+C.
 
-    INSTRUCTOR: kill the run during this sleep on the first pass, then re-run.
-    fetch_bounces and classify will be served from the checkpoint cache.
+    cache=False keeps this step always re-running, so the lesson lands every
+    time: re-run the flow and `fetch_bounces`/`classify` come back from cache
+    instantly while `correlate` does its (slow) work again. No need to kill the
+    first run for the demo to work — though killing it mid-sleep shows the same
+    thing: completed checkpoints are never redone.
     """
     time.sleep(10)
     summary: dict[str, int] = {}
