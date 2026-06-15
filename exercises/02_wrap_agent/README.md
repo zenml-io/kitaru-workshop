@@ -13,7 +13,7 @@ Kitaru doesn't replace it. Two added lines:
 
 ```python
 from kitaru.adapters.pydantic_ai import KitaruAgent
-durable_agent = KitaruAgent(agent, checkpoint_strategy="calls")
+durable_agent = KitaruAgent(agent, name="office_assistant", checkpoint_strategy="calls")
 ```
 
 Now every model call and every tool call is a durable checkpoint with

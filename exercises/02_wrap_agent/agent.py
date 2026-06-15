@@ -67,6 +67,7 @@ def search_archive(query: str) -> str:
 
 durable_agent = KitaruAgent(
     agent,
+    name="office_assistant",  # stable name — required (0.16+) so replay/lookup is unambiguous
     checkpoint_strategy="calls",  # every model call + tool call = a checkpoint
     # (the other option is "turn"; per-name tool checkpoint configs also exist)
 )

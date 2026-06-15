@@ -195,7 +195,7 @@ from kitaru.adapters.pydantic_ai import KitaruAgent
 
 agent = Agent("openai:gpt-5.2", system_prompt="...")   # the agent you already have
 
-durable_agent = KitaruAgent(agent, checkpoint_strategy="calls")
+durable_agent = KitaruAgent(agent, name="office_assistant", checkpoint_strategy="calls")
 ```
 
 - **You already have an agent. Wrap *that one*** — provided one is the fallback

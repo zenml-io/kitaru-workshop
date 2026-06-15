@@ -26,6 +26,8 @@ re-check, since the SDK moves fast.
       `uv pip install 's3fs>2022.3.0,!=2025.3.1' boto3`).
 - [ ] **Ex 2 (wrap agent):** `kitaru.adapters.pydantic_ai.KitaruAgent`,
       `checkpoint_strategy="calls"`; per-call cost shows in the dashboard.
+      **0.16 gotcha:** `KitaruAgent` now requires a stable `name=` (raises
+      `UserError` without it) — pass `name="..."` or set the wrapped agent's name.
 - [ ] **Ex 3 (replay) ★:** SDK `client.executions.replay(exec_id, from_=...,
       overrides={"checkpoint.<name>": ...})`; CLI flow inputs via `--args`,
       checkpoint outputs via `--overrides`. `kitaru.llm(prompt, *, model, system,

@@ -12,7 +12,7 @@ from kitaru.adapters.pydantic_ai import KitaruAgent
 # your existing agent — unchanged. (The model must be bound at construction.)
 my_agent = Agent("openai:gpt-5.2", system_prompt="...", tools=[...])
 
-durable = KitaruAgent(my_agent, checkpoint_strategy="calls")
+durable = KitaruAgent(my_agent, name="my_agent", checkpoint_strategy="calls")
 
 @flow
 def run_my_agent(prompt: str) -> str:
