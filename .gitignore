@@ -7,3 +7,6 @@ slides.pdf
 .kitaru-config/
 .scratch/
 .kitaru/
+
+# confidential, local-only (cohort mappings etc.)
+*.private.md
