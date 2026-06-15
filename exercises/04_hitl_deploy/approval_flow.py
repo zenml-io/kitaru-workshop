@@ -28,7 +28,7 @@ SUPPLIER_CONTEXT = (
 @checkpoint
 def draft_counter_offer(context: str) -> str:
     # kitaru.llm(prompt, *, model=...) — verified against kitaru 0.15.0
-    return kitaru.llm(
+    draft = kitaru.llm(
         model="strong",
         prompt=(
             "You are a procurement negotiation assistant. Draft a concise, "
@@ -36,6 +36,12 @@ def draft_counter_offer(context: str) -> str:
             "target price with justification from the benchmark.\n\n" + context
         ),
     )
+    # Save + preview INSIDE the checkpoint — kitaru.save() requires checkpoint
+    # scope, and a checkpoint return is an artifact handle in flow scope (don't
+    # slice it there).
+    kitaru.save("draft_offer", draft)
+    print("\n--- DRAFT (awaiting approval) ---\n", draft[:400], "...\n")
+    return draft
 
 
 @checkpoint
@@ -47,8 +53,6 @@ def finalize(draft: str) -> str:
 @flow
 def counter_offer(context: str = SUPPLIER_CONTEXT) -> str:
     draft = draft_counter_offer(context)
-    kitaru.save("draft_offer", draft)
-    print("\n--- DRAFT (awaiting approval) ---\n", draft[:400], "...\n")
 
     # The magic: this suspends the execution AND releases the compute.
     # The pod is gone. Tomorrow, when someone approves, the execution

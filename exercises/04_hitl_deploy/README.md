@@ -14,8 +14,12 @@ money and a legal relationship: a human signs off, full stop.
 3. From a second terminal:
    ```bash
    kitaru executions list                     # find the ID with status "waiting"
+   kitaru executions logs <ID>                # read the DRAFT before you decide
    kitaru executions input <ID> --value true  # resolves AND resumes automatically
    ```
+   (The draft is generated inside a checkpoint, so its preview shows in
+   `executions logs` / the dashboard — and is saved as the `draft_offer`
+   artifact — rather than in the terminal that launched the run.)
    (`kitaru executions resume <ID>` exists for runs that didn't continue on
    their own. Note: `--value true` works because the wait declares `schema=bool`;
    a schema-less `kitaru.wait(name=...)` is a plain continue-gate resolved with
