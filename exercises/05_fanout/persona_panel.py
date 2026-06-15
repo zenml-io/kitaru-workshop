@@ -4,12 +4,16 @@ Theme: synthetic persona panel (archetype: the persona simulator). N persona
 agents react to a draft press statement in parallel, each in an ISOLATED
 containerized runtime; results aggregate into a sentiment distribution.
 
-Demo-only: needs Docker + an LLM key. Students watch the dashboard.
+Demo-only. Real container isolation needs a REMOTE orchestrator (e.g. the k8s
+stack) + an LLM key. On the local stack the LocalOrchestrator does NOT support
+isolated runtimes — it logs a warning and falls back to INLINE execution, so the
+flow still runs (and .submit()/gather + aggregate + replay all work) but without
+real per-persona containers. Docker on your laptop alone is not enough.
 
-Verified against kitaru 0.15.0: @checkpoint(runtime=..., retries=..., cache=...)
+Verified against kitaru 0.16.0: @checkpoint(runtime=..., retries=..., cache=...)
 and .submit() exist (checkpoints also expose .map() and .product() for bulk
-fan-out — worth mentioning on stage). REMAINING VERIFY: the handle API returned
-by .submit() — confirm .result() (or equivalent) with Docker running.
+fan-out). .submit() returns a handle with .result(); the flow completes
+end-to-end on the local stack (isolated → inline fallback).
 """
 
 import kitaru
@@ -57,6 +61,8 @@ def persona_reaction(persona: str, statement: str) -> dict:
 
 @checkpoint
 def aggregate(reactions: list[dict]) -> dict:
+    # Save inside the checkpoint — kitaru.save() requires checkpoint scope.
+    kitaru.save("panel_reactions", reactions)
     scores = [r["score"] for r in reactions]
     distribution = {
         "n": len(scores),
@@ -73,9 +79,7 @@ def aggregate(reactions: list[dict]) -> dict:
 def sentiment_panel(statement: str = DRAFT_STATEMENT) -> dict:
     # Fan out: submit all persona checkpoints, then gather.
     handles = [persona_reaction.submit(p, statement) for p in PERSONAS]
-    reactions = [h.result() for h in handles]  # VERIFY handle API (.result())
-
-    kitaru.save("panel_reactions", reactions)
+    reactions = [h.result() for h in handles]  # .result() resolves each fan-out call
     return aggregate(reactions)
 
 

@@ -17,6 +17,15 @@ execution, and the cost meter running the whole time.
    (or a new model) via overrides and compare sentiment distributions —
    regression testing for a simulator.
 
+> ⚠️ **`runtime="isolated"` needs a *remote* orchestrator** (e.g. the k8s stack).
+> On the **local** stack the `LocalOrchestrator` doesn't support isolated
+> runtimes, so it transparently falls back to **inline** execution (you'll see a
+> log line saying so). The code still runs and the `.submit()`/gather +
+> aggregate + replay all work — you just don't get real container isolation
+> until you run it on a remote stack (`kitaru stack use aws-k8s-stack`). That's
+> why this is a take-home/recorded demo, not a local hands-on. Docker alone on
+> your laptop is **not** enough — isolation is an orchestrator capability.
+
 ## Why `cheap` and not `strong`?
 
 Panels multiply: personas × rounds × scenarios. This is exactly the workload
