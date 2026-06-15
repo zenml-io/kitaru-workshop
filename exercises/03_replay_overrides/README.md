@@ -6,8 +6,13 @@ metrics. Before any change ships, you want *evidence*.
 
 ## Steps
 
-1. Baseline: `python replay_demo.py` → note the execution ID.
-2. Replay twice: `python replay_demo.py --replay <EXEC_ID>`
+> **Run these from the project root** (the `kitaru init` source root), not from
+> inside this folder — replay re-imports the flow module and can't resolve it
+> from the exercise directory (`KitaruRuntimeError: Failed to import replay
+> source module`).
+
+1. Baseline: `python exercises/03_replay_overrides/replay_demo.py` → note the execution ID.
+2. Replay twice: `python exercises/03_replay_overrides/replay_demo.py --replay <EXEC_ID>`
    - Replay (a): same model, **edited upstream answer** injected via
      `overrides={"checkpoint.fetch_answers": ...}`
    - Replay (b): same input, **cheaper model alias**.

@@ -8,8 +8,11 @@ which brands were mentioned. Then we REPLAY the extraction step:
 
 Requires: an LLM key + registered aliases "strong" and "cheap" (see prework).
 
-Run the baseline:   python replay_demo.py
-Replay (SDK):       python replay_demo.py --replay <EXEC_ID>
+RUN FROM THE PROJECT ROOT (the `kitaru init` source root) — replay re-imports
+this flow module, and it can't resolve it from inside the exercise folder.
+
+Run the baseline:   python exercises/03_replay_overrides/replay_demo.py
+Replay (SDK):       python exercises/03_replay_overrides/replay_demo.py --replay <EXEC_ID>
 Replay (CLI):       kitaru executions replay <EXEC_ID> --from extract_mentions \
                         --overrides '{"checkpoint.fetch_answers": "..."}'
 """
