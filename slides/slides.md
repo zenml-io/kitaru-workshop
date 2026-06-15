@@ -117,16 +117,18 @@ kitaru init && kitaru login                  # starts a local server
 kitaru status                                # should say: running
 ```
 
-For Modules 2–4 (needs one LLM key — **Anthropic or OpenAI**), register two
-aliases pointing at *your* provider:
+For Modules 2–4 (needs one LLM key — **Anthropic or OpenAI**): put your key in a
+secret, then register two aliases pointing at *your* provider.
 
 ```bash
-# Anthropic (default for this cohort)
+# 1) your key → a secret named llm-creds (aliases + the chatbot read it)
+kitaru secrets set llm-creds --ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+#   …OpenAI:  kitaru secrets set llm-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
+
+# 2) register cost-tier aliases  (Anthropic = cohort default)
 kitaru model register strong --model anthropic/claude-sonnet-4-5  --secret llm-creds
 kitaru model register cheap  --model anthropic/claude-haiku-4-5   --secret llm-creds
-# …or OpenAI
-# kitaru model register strong --model openai/gpt-5.2    --secret llm-creds
-# kitaru model register cheap  --model openai/gpt-5-nano --secret llm-creds
+#   …OpenAI:  strong=openai/gpt-5.2   cheap=openai/gpt-5-nano   --secret llm-creds
 ```
 
 *Tried Kitaru/ZenML before? `kitaru clean all` first to wipe stale local state.*
