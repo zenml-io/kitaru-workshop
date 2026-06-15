@@ -199,7 +199,7 @@ durable_agent = KitaruAgent(agent, name="office_assistant", checkpoint_strategy=
 ```
 
 - **You already have an agent. Wrap *that one*** — provided one is the fallback
-- Every model + tool call = a checkpoint, tokens & cost logged per call
+- Every model + tool call = a checkpoint, tokens logged per call (and $ cost when the model is priced)
 - LangGraph, OpenAI Agents SDK, Claude SDK adapters too — keep your framework
 - Granular checkpoints aren't just crash recovery — **they're the replay targets**
 
@@ -219,7 +219,7 @@ client.executions.replay(
 
 1. Run with alias `strong` — your expensive model
 2. Replay with an **edited upstream answer** (what-if on the input)
-3. Replay with alias `cheap` — outputs side-by-side, **per-call cost diff**
+3. Replay with alias `cheap` — outputs side-by-side, **per-call token diff** (cheaper ≠ always fewer tokens!)
 
 Upstream checkpoints: cached, never re-paid. Replay root + descendants: re-executed for real.
 

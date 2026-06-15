@@ -40,6 +40,12 @@ production inputs — but it is not an oracle:
 - **Cost deltas are the hardest number** (token math on identical inputs).
   Quality deltas are evidence, not proof. Use replay to *kill bad candidates
   cheaply*; confirm winners with a small live test.
+- **Watch out — "cheaper" model ≠ fewer tokens.** In a sample run, `cheap`
+  emitted ~1900 output tokens vs `strong`'s ~200 (it rambled), so the cheaper
+  *per-token* model was the more expensive *call*. That's exactly why you
+  measure instead of assuming. (Dollar cost shows only when Kitaru has pricing
+  for the model; tokens are always tracked, so the token diff is what you
+  compare here.)
 
 ## Map this to YOUR PoC
 
