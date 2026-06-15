@@ -16,6 +16,30 @@ Tech reality: most agent/LLM/ML work is Python; TypeScript usually owns the
 frontend. That's why this is Python-only and the deployment-invoke slide is the
 hook for the frontend folks (they call deployed flows over REST).
 
+## Slides vs terminal — when to switch (presenter flow)
+
+Default = stay on slides. Only switch to the terminal at the 🖥️ rows. The deck
+shows the code/expected-output *on the slide* first; the terminal is where you
+(and the room, for hands-on) actually run it.
+
+| Deck section | Mode | What you do |
+|---|---|---|
+| Title → "What Kitaru is" (Module 0) | 📊 SLIDES | Theory: agents vs workflows, what breaks, retry/resume/replay/regress |
+| "Setup — do this now" | 📊 SLIDES | Room runs setup in *their* terminals; you stay on the slide |
+| **Module 1** "Flows and checkpoints" + "run it twice" | 📊 SLIDES | Walk the code + expected cached output on-slide |
+| → run Exercise 1 | 🖥️ TERMINAL (room) | `python exercises/01_first_flow/flow.py`, run twice → caching |
+| **Module 2** "wrap YOUR agent" | 📊 → 🖥️ | Slide first, then `python exercises/02_wrap_agent/agent.py` (or theirs) |
+| "Now you: replay with overrides" ★ | 📊 → 🖥️ (room) | Slide, then `exercises/03_replay_overrides` — baseline then `--replay` |
+| "Honest slide" + "regression scenario" | 📊 SLIDES | No terminal — framing + discussion |
+| **Module 3** stacks / deployments / invoking | 📊 SLIDES | Concepts only |
+| "Demo: the durable chatbot" | 🖥️ TERMINAL/UI (you) | Deployed flow + `python ui.py` → Gradio; kill-tab-resume demo |
+| **Module 4** "Replay Factory" + "the loop" | 📊 → 🖥️ | Slide, then `python exercises/07_replay_factory/factory.py` |
+| "verdict" + eval slides | 📊 SLIDES | The eval Q&A armory (see EVALS_PRIMER) |
+| "Map Kitaru onto your PoC" | 📊 SLIDES + worksheet | `team_mapping/MAPPING_WORKSHEET.md` |
+
+Take-home only (not shown live): Exercises 4 (HITL) and 5 (fan-out). Mention,
+don't run.
+
 ## Strategic framing (calibrated, not salesy)
 
 - **Cost narrative**: "AI spend is the new headcount" is *industry mood*, not a

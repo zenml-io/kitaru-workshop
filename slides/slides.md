@@ -178,6 +178,8 @@ Kitaru: Checkpoint `classify`      cached.     ← instant
 Kitaru: Checkpoint `correlate`     started ... ← cache=False, re-runs
 ```
 
+🖥️ **TERMINAL (everyone):** `python exercises/01_first_flow/flow.py` — run it twice
+
 Also in there: `kitaru.log()` metadata + `kitaru.save()` versioned artifacts
 (*inside* checkpoints — that's the durability boundary).
 
@@ -208,7 +210,7 @@ durable_agent = KitaruAgent(agent, name="office_assistant", checkpoint_strategy=
 - LangGraph, OpenAI Agents SDK, Claude SDK adapters too — keep your framework
 - Granular checkpoints aren't just crash recovery — **they're the replay targets**
 
-*`exercises/02_wrap_agent` + `BRING_YOUR_OWN.md` — wrap your PoC agent live*
+🖥️ **TERMINAL:** `python exercises/02_wrap_agent/agent.py` · or wrap your own (`BRING_YOUR_OWN.md`)
 
 ---
 
@@ -228,7 +230,7 @@ client.executions.replay(
 
 Upstream checkpoints: cached, never re-paid. Replay root + descendants: re-executed for real.
 
-`exercises/03_replay_overrides` — HANDS-ON
+🖥️ **TERMINAL (everyone):** `exercises/03_replay_overrides` — run, then `--replay <exec-id>`
 
 ---
 
@@ -324,7 +326,7 @@ KitaruClient().deployments.invoke(
 - Every turn versions the `history` artifact → **kill the browser tab, reopen, continue**
 - You pay for the seconds the model is thinking — a session can last months
 
-`exercises/06_chatbot` (take it home) · approval gates: `exercises/04_hitl_deploy`
+🖥️ **DEMO (you):** deploy + `python ui.py` → Gradio · take-home: `06_chatbot`, `04_hitl_deploy`
 
 ---
 
@@ -353,7 +355,7 @@ def replay_factory(cases_path, baseline="strong", candidate="cheap"):
 
 - The eval loop is *itself a Kitaru flow* — 3 durable checkpoints. Crash in
   aggregation? The LLM batch is **cached**. Eval the eval by replaying it.
-- `exercises/07_replay_factory` — run it on your own cases
+- 🖥️ **TERMINAL:** `python exercises/07_replay_factory/factory.py` — run on your own cases
 
 ---
 
