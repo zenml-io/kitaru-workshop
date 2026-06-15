@@ -28,6 +28,11 @@ metrics. Before any change ships, you want *evidence*.
    > 💲 Dollar cost shows only when Kitaru has pricing for the model. For
    > unpriced models (e.g. `gpt-5.2`/`gpt-5-nano`) cost is blank — **tokens** are
    > the reliable comparison, and they're always tracked.
+
+   Per-call tokens from the terminal (the dashboard/`list` don't show them):
+   ```bash
+   python exercises/03_replay_overrides/show_tokens.py <EXEC_ID>
+   ```
 4. Same override from the CLI (put **real** text in the override, not the
    placeholder!):
    ```bash
@@ -42,7 +47,12 @@ metrics. Before any change ships, you want *evidence*.
 
 ## Rules of the road (these will be on the exam — i.e., in your PoC)
 
-- Overrides use the `checkpoint.<name>` prefix and target single-output checkpoints.
+- An override replaces a checkpoint's **output (return value)**, not a function
+  parameter. `checkpoint.fetch_answers` swaps what `fetch_answers` *returned*;
+  because the flow wires `answer = fetch_answers(...)` into
+  `extract_mentions(answer, ...)`, your edited text becomes the `answer` that
+  `extract_mentions` re-runs on. (Verified: override with a "ClickUp" answer →
+  the replay's `mentions_report` contains ClickUp.)
 - `from_` accepts checkpoint names / invocation IDs; ambiguity raises an error — name your checkpoints deliberately.
 - In the CLI, **flow input** overrides go via `--args '{"model_alias": "cheap"}'`,
   **checkpoint output** overrides via `--overrides '{"checkpoint.x": ...}'`.
