@@ -65,7 +65,7 @@ When a check fails: fix the exercise code AND the matching snippet in
 
 ## 4. Final pass
 
-- [ ] Fill `<REPO_URL_HERE>` in `prework/PREWORK.md` and the closing slide.
+- [x] Repo URL filled in `prework/PREWORK.md` and the closing slide.
 - [ ] Render slides: `npx @marp-team/marp-cli slides/slides.md -o slides/slides.pdf`
 - [ ] Send `PREWORK.md` to attendees/organizers ≥3 days before.
 - [ ] Workshop API key created, spend-capped, calendar reminder to delete it.

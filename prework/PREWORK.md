@@ -54,7 +54,7 @@ Ollama users: `ollama/qwen3.5` works too.)
 ## 5. Get the materials
 
 ```bash
-git clone <REPO_URL_HERE>   # filled in before the workshop
+git clone https://github.com/zenml-io/kitaru-workshop.git
 cd kitaru-workshop
 python exercises/01_first_flow/flow.py   # should complete and print an execution ID
 ```

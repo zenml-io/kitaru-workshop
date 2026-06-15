@@ -422,6 +422,6 @@ Worksheet — then one insight per team, out loud.
 
 ## github.com/zenml-io/kitaru · docs.zenml.io/kitaru
 
-**hamza@zenml.io** · Slides + exercises: `<REPO_URL_HERE>`
+**hamza@zenml.io** · Slides + exercises: github.com/zenml-io/kitaru-workshop
 
 *The five walls are real. Now you have the tools.*
