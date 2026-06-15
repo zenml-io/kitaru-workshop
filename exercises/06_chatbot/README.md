@@ -66,13 +66,13 @@ hosted/managed servers, *absent on bare local servers* ("Streaming is disabled
 on the server" → publishes are dropped, durability unaffected). Hence: the
 instructor demos this against the hosted workspace.
 
-⚠️ **MVP limitation (runtime-verified):** `event_stream_handler` routes tool
-bodies through an executor inside the model checkpoint scope, so it can't be
-combined with the chatbot's flow-scope `say_and_wait` pattern
-(`allow_sync_tool_body_waits`) — you'd hit "Nested checkpoint calls are not
-supported". Stream regular agents; keep wait-driven chat flows non-streaming
-for now. (Also note: with a handler, each event is published from two sources —
-`watch_stream.py` dedupes by keeping `model_request_stream` only.)
+✅ **Streaming durable chatbot now works (kitaru 0.16.0, verified).** Earlier
+versions threw "Nested checkpoint calls are not supported" when you combined
+`event_stream_handler` with the flow-scope `say_and_wait`/`persist_history`
+pattern. Fixed in 0.16.0 (#431) — add `event_stream_handler=` to the chatbot's
+`KitaruAgent` and it streams *and* waits durably (verified: it reaches the
+wait, no error). Duplicate stream events are also fixed (#428), so the
+`data.source` dedupe in `watch_stream.py` is now just belt-and-suspenders.
 
 ## What to look for in the dashboard
 

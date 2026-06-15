@@ -1,0 +1,15 @@
+[project]
+name = "kitaru-workshop"
+version = "0.1.0"
+description = "Agents That Earn Production — a hands-on workshop on Kitaru, ZenML's open runtime for Python agents."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "kitaru[local,pydantic-ai]>=0.16.0",
+    "openai>=1.0",
+]
+
+# Dependency-only project (the workshop isn't a Python package) — `uv sync`
+# just provisions the pinned environment from the lockfile.
+[tool.uv]
+package = false

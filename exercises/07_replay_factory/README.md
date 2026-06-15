@@ -57,6 +57,15 @@ The `replay_factory_report` artifact and per-checkpoint cost are in the dashboar
   dataset → eventually the **reward signal for RL** on a cheaper open model.
   That's the cost endgame the whole "AI spend is the new headcount" story points at.
 
+## Cost is first-class (kitaru 0.16.0)
+
+Tracked `kitaru.llm()` calls record input/output token counts as execution
+metadata — split into freshly-incurred vs replay-reused — and you can aggregate
+across the batch with `kitaru executions statistics` (or
+`KitaruClient().executions.statistics(...)`), grouped by flow/stack/tag/metadata.
+So "is the cheaper model actually cheaper?" has a real number behind the verdict,
+not just vibes.
+
 ## pass^k — reliability, not one-shot
 
 ```bash

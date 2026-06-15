@@ -39,7 +39,7 @@ Cloud artifact stores need their integration deps once per environment
 (the error message tells you exactly what):
 
 ```bash
-pip install 's3fs>2022.3.0,!=2025.3.1' boto3 aws-profile-manager   # for S3
+uv pip install 's3fs>2022.3.0,!=2025.3.1' boto3 aws-profile-manager   # for S3
 ```
 
 Caching and replay work identically across stacks — checkpoints cache even

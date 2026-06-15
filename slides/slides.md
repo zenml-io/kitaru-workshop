@@ -27,7 +27,7 @@ style: |
 
 **Hamza Tahir** · Co-founder & CEO, ZenML
 
-*Python only · everything runs on your laptop: `pip install kitaru`*
+*Python only · everything runs on your laptop: `uv add kitaru`*
 
 ---
 
@@ -99,9 +99,32 @@ you have to be able to re-run it.*
 - Not a framework. Not a tracing tool. **The runtime your agents run on.**
 
 ```bash
-pip install 'kitaru[local,pydantic-ai]'
-kitaru init && kitaru login     # local server — no cloud account needed
+uv add 'kitaru[local,pydantic-ai]'   # add it to your own project
+kitaru init && kitaru login          # local server — no cloud account needed
 ```
+
+---
+
+# Setup — do this now (2 min)
+
+Didn't do the prework? Catch up now — everything runs on your laptop:
+
+```bash
+git clone https://github.com/zenml-io/kitaru-workshop.git
+cd kitaru-workshop
+uv sync && source .venv/bin/activate         # pinned env from the lockfile
+kitaru init && kitaru login                  # starts a local server
+kitaru status                                # should say: running
+```
+
+For Modules 2–4 (needs one LLM key), register two model aliases:
+
+```bash
+kitaru model register strong --model openai/gpt-5.2   --secret <your-key-secret>
+kitaru model register cheap  --model openai/gpt-5-nano --secret <your-key-secret>
+```
+
+*Stuck? Flag an instructor — Exercise 1 needs no key, so start there.*
 
 ---
 

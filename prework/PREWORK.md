@@ -10,18 +10,20 @@ steps beforehand so we don't spend workshop time on installs.
 - ~1 GB free disk (local Kitaru server + Docker images for the demo modules)
 - Optional but recommended: Docker Desktop running (needed only for Module 5)
 
-## 2. Install
+## 2. Get the materials + install (uv)
 
 ```bash
-pip install 'kitaru[local,pydantic-ai]'
+git clone https://github.com/zenml-io/kitaru-workshop.git
+cd kitaru-workshop
+uv sync                        # creates .venv with the exact pinned deps (kitaru 0.16.0)
+source .venv/bin/activate      # or prefix later commands with `uv run`
 ```
 
-The extras matter: `local` brings the local-server dependencies; `pydantic-ai`
-pins a compatible adapter version so the agent and chatbot exercises work too —
-use the extra, **not** a standalone `pip install pydantic-ai` (latest is too
-new and breaks the adapter import).
-
-(Use a fresh virtualenv if you prefer: `python -m venv .venv && source .venv/bin/activate`)
+`uv sync` reads the committed `uv.lock`, so the whole room ends up on identical,
+known-good versions — no resolver drift. (No uv yet? `curl -LsSf
+https://astral.sh/uv/install.sh | sh`. Prefer plain pip? `python -m venv .venv &&
+source .venv/bin/activate && pip install 'kitaru[local,pydantic-ai]'` — but the
+lockfile path is the reliable one.)
 
 ## 3. Initialize and start the local server
 
@@ -51,15 +53,15 @@ kitaru model register cheap --model openai/gpt-5-nano
 (Any two models of different cost tiers work — the point is the price gap.
 Ollama users: `ollama/qwen3.5` works too.)
 
-## 5. Get the materials
+## 5. Smoke test
+
+With your venv active (from step 2):
 
 ```bash
-git clone https://github.com/zenml-io/kitaru-workshop.git
-cd kitaru-workshop
 python exercises/01_first_flow/flow.py   # should complete and print an execution ID
 ```
 
-If that last command prints an execution ID, you're ready. 🎉
+If that prints an execution ID, you're ready. 🎉
 
 ## Troubleshooting
 

@@ -9,12 +9,12 @@ live events over the server's SSE channel. Watch them from another terminal:
     python watch_stream.py <EXEC_ID>         # tokens tick in live (or replayed
                                              # via cursor if you attach late)
 
-KNOWN MVP LIMITATION (runtime-verified): ``event_stream_handler`` routes tool
-bodies through an executor inside the model checkpoint scope, so it cannot be
-combined with the chatbot's flow-scope ``say_and_wait`` pattern
-(``allow_sync_tool_body_waits``) — you get "Nested checkpoint calls are not
-supported". Stream simple/checkpointed-tool agents; keep wait-driven chat
-flows non-streaming for now.
+NOTE (kitaru 0.16.0): you can also stream a *durable chatbot* now —
+``event_stream_handler`` combined with the flow-scope ``say_and_wait`` pattern
+(``allow_sync_tool_body_waits``) works as of 0.16.0 (#431; verified — it reaches
+the wait instead of throwing "Nested checkpoint calls"). This file streams a
+plain agent for simplicity; add ``event_stream_handler=`` to ``chatbot.py`` for
+a streaming durable chat.
 
 SERVER REQUIREMENT: live events need the server's streaming broker — present
 on hosted/managed servers, absent on bare `kitaru login` local servers

@@ -53,5 +53,5 @@ Complete this sentence for the room:
 
 ---
 
-*Stuck? Flag an instructor. Done early? Start coding it — `pip install kitaru`
+*Stuck? Flag an instructor. Done early? Start coding it — `uv add kitaru`
 is right there, and office hours go to the first teams with a running flow.*

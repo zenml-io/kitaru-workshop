@@ -1,14 +1,15 @@
 # Pre-workshop verification checklist
 
 Run this end-to-end against your own server/stack before presenting. The notes
-below are **gotchas verified live against kitaru 0.15.0** — pin your version and
+below are **gotchas verified live against kitaru 0.16.0** (core paths + streaming
+re-checked on 0.16.0; full suite originally on 0.15.0) — pin via `uv.lock` and
 re-check, since the SDK moves fast.
 
 ## 0. Environment
 
-- [ ] `pip install 'kitaru[local,pydantic-ai]'` in a fresh venv — note versions: ______
-      (plain `kitaru` lacks the local server; a standalone latest `pydantic-ai`
-      breaks the adapter import — use the extra)
+- [ ] `uv sync` (from the committed `uv.lock`) → `.venv` with pinned deps
+      (kitaru 0.16.0). `source .venv/bin/activate` or use `uv run`. The lock keeps
+      the whole room identical — no resolver drift. (Needs Python ≥3.11.)
 - [ ] `kitaru init` then `kitaru login` — **`login` starts + connects the local
       server**, `init` only inits the project. `kitaru status` should show it running.
 - [ ] `kitaru model register strong --model openai/gpt-5.2 --secret <secret>` and
@@ -22,7 +23,7 @@ re-check, since the SDK moves fast.
       called **inside a `@checkpoint`** (flow scope raises `KitaruContextError`).
 - [ ] **Ex 1 stacks:** `kitaru stack use <remote>` then re-run → same code, remote
       artifacts. Cloud artifact stores need their deps once (e.g. S3:
-      `pip install 's3fs>2022.3.0,!=2025.3.1' boto3`).
+      `uv pip install 's3fs>2022.3.0,!=2025.3.1' boto3`).
 - [ ] **Ex 2 (wrap agent):** `kitaru.adapters.pydantic_ai.KitaruAgent`,
       `checkpoint_strategy="calls"`; per-call cost shows in the dashboard.
 - [ ] **Ex 3 (replay) ★:** SDK `client.executions.replay(exec_id, from_=...,
@@ -41,10 +42,12 @@ re-check, since the SDK moves fast.
       `kitaru init` source root.
 - [ ] **Ex 6 (streaming):** `event_stream_handler=` → `pydantic_ai.stream.*` over
       SSE; `watch_stream.py` consumes it. Needs the server's streaming broker
-      (hosted servers; bare local servers drop publishes). With a handler each
-      event publishes twice (`model_request_stream` + `event_stream_handler`) —
-      dedupe on `data.source`. NOTE: streaming can't combine with the chatbot's
-      flow-scope wait tool today — stream a regular agent.
+      (hosted servers; bare local servers drop publishes). NOTE (0.16.0): the
+      streaming **durable chatbot now works** — `event_stream_handler` + the
+      flow-scope `say_and_wait`/`persist_history` no longer throws "nested
+      checkpoint" (#431, verified — reaches the wait), and duplicate stream events
+      are fixed (#428), so the `data.source` dedupe in `watch_stream.py` is now
+      belt-and-suspenders, not required.
 - [ ] **Ex 7 (Replay Factory):** `python factory.py` → ship/don't-ship report;
       `--samples k` reports pass^k. **Kitaru data-flow rule:** inside a `@flow` a
       checkpoint's return is an artifact *handle* — wire checkpoint→checkpoint or

@@ -35,9 +35,9 @@ stacks, replay, cost, evals, deployment versions.
 ## Quick start (instructor)
 
 ```bash
-pip install 'kitaru[local,pydantic-ai]'
+uv sync && source .venv/bin/activate   # pinned env from uv.lock (kitaru 0.16.0)
 kitaru init
-kitaru login                       # starts + connects to a local server
+kitaru login                           # starts + connects to a local server
 kitaru status
 python exercises/01_first_flow/flow.py
 ```
