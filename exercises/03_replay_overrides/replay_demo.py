@@ -50,6 +50,10 @@ def extract_mentions(answer: str, model_alias: str) -> str:
         prompt=EXTRACTION_PROMPT.format(answer=answer),
         model=model_alias,
     )
+    # A named, versioned artifact — must be saved INSIDE a @checkpoint (flow
+    # scope raises KitaruContextError). Each replay re-runs this step and
+    # versions a fresh report you can diff against the baseline.
+    kitaru.save("mentions_report", response)
     return response
 
 
@@ -57,9 +61,24 @@ def extract_mentions(answer: str, model_alias: str) -> str:
 def visibility_scan(category: str = "project management software",
                     model_alias: str = "strong") -> str:
     answer = fetch_answers(category)
-    mentions = extract_mentions(answer, model_alias)
-    kitaru.save("mentions_report", mentions)
-    return mentions
+    return extract_mentions(answer, model_alias)
+
+
+def _summary(execution) -> str:
+    """Pull the model + token counts off a (replayed) execution for an inline
+    diff. Cost in USD is only populated when Kitaru has pricing for the model;
+    tokens are always tracked, so they're the reliable thing to compare here.
+    """
+    try:
+        for cp in execution.checkpoints:
+            for call in (cp.metadata or {}).get("llm_calls", {}).values():
+                return (f"model={call['resolved_model']} "
+                        f"tokens in/out/total="
+                        f"{call['tokens_input']}/{call['tokens_output']}/"
+                        f"{call['total_tokens']}")
+    except Exception:
+        pass
+    return "(no llm metadata)"
 
 
 def replay_with_edited_answer(exec_id: str) -> None:
@@ -75,7 +94,7 @@ def replay_with_edited_answer(exec_id: str) -> None:
         from_="extract_mentions",
         overrides={"checkpoint.fetch_answers": edited},
     )
-    print(f"Replay started from extract_mentions with edited answer: {handle}")
+    print(f"[edited answer] replay {handle.exec_id}  {_summary(handle)}")
 
 
 def replay_with_cheap_model(exec_id: str) -> None:
@@ -92,7 +111,7 @@ def replay_with_cheap_model(exec_id: str) -> None:
         from_="extract_mentions",
         model_alias="cheap",
     )
-    print(f"Replay started from extract_mentions with alias 'cheap': {handle}")
+    print(f"[cheap model]   replay {handle.exec_id}  {_summary(handle)}")
 
 
 if __name__ == "__main__":
