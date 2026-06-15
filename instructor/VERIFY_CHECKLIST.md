@@ -42,9 +42,11 @@ re-check, since the SDK moves fast.
       breaks the adapter inside the pod). Inline any sibling imports — the deploy
       loader imports the flow file standalone. Flows must live inside the
       `kitaru init` source root.
-      **0.16 gotchas:** (1) the `openai-creds` secret must exist or even a
+      **0.16 gotchas:** (1) the `llm-creds` secret must exist or even a
       *local* run fails to compile (`secret_environment_from` is resolved
-      locally too): `kitaru secrets set openai-creds --OPENAI_API_KEY="$OPENAI_API_KEY"`.
+      locally too): `kitaru secrets set llm-creds --ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"`
+      (or `--OPENAI_API_KEY=...`). Model defaults to `anthropic:claude-sonnet-4-5`;
+      OpenAI users set `WORKSHOP_MODEL=openai:gpt-4o-mini`.
       (2) `handle.wait()` on the chatbot raises `KitaruAmbiguousFlowResultError`
       — agent flows have many terminal checkpoints (per model call + per-turn
       `persist_history`) and no static output spec, so there's no single result

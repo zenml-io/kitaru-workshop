@@ -28,6 +28,7 @@ use ``drive_local.py`` so one actor runs the flow while another actor answers
 pending waits.
 """
 
+import os
 from dataclasses import dataclass, field
 from uuid import uuid4
 
@@ -45,13 +46,17 @@ CHATBOT_IMAGE = ImageSettings(
     # `kitaru[pydantic-ai]` pins a compatible pydantic-ai-slim — an unpinned
     # "pydantic-ai" pulls the latest, which breaks the kitaru adapter import
     # inside the pod (verified live: pod died at `from kitaru.adapters...`).
-    requirements=["kitaru[pydantic-ai]", "openai"],
-    # Injects the secret's keys (here: ``OPENAI_API_KEY``) into the runtime
-    # environment of every checkpoint pod.
-    secret_environment_from=["openai-creds"],
+    # Ship both provider SDKs so the pod works with whichever MODEL resolves to.
+    requirements=["kitaru[pydantic-ai]", "anthropic", "openai"],
+    # Injects the secret's keys (e.g. ``ANTHROPIC_API_KEY`` or ``OPENAI_API_KEY``)
+    # into the runtime environment of every checkpoint pod.
+    secret_environment_from=["llm-creds"],
 )
 
-MODEL = "openai:gpt-4o-mini"
+# Provider-neutral: defaults to Anthropic (this cohort), override for OpenAI etc.
+# e.g. export WORKSHOP_MODEL=openai:gpt-4o-mini  (set in the pod env at deploy
+# time, or in your shell for local runs).
+MODEL = os.getenv("WORKSHOP_MODEL", "anthropic:claude-sonnet-4-5")
 SYSTEM_PROMPT = (
     "You are a helpful, concise assistant. Talk to the user via the "
     "`say_and_wait` tool — pass your reply as the `message` argument and "

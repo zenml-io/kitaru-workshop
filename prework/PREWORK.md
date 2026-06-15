@@ -38,34 +38,45 @@ the workshop Slack channel **before** the day.
 
 ## 4. Model API key
 
-Exercise 1 needs **no API key**. For Exercises 2–4 you'll need one LLM provider key.
-Either bring your own (`OPENAI_API_KEY` or `ANTHROPIC_API_KEY` exported in your
-shell), or use the workshop key we'll hand out on the day (rate-limited, deleted after).
-
-Register two model aliases once you have a key (we use these names in all
-exercises). Model IDs use `provider/model` format:
+Exercise 1 needs **no API key**. For Exercises 2–7 you'll need one LLM provider
+key — **Anthropic or OpenAI** (whichever you have). Export it in your shell:
 
 ```bash
-kitaru model register strong --model openai/gpt-5.2
-kitaru model register cheap --model openai/gpt-5-nano
+export ANTHROPIC_API_KEY=sk-ant-...     # this cohort defaults to Anthropic
+# or
+export OPENAI_API_KEY=sk-...
+```
+
+**1) A key secret** named `llm-creds`. The chatbot (Exercise 6) declares
+`secret_environment_from=["llm-creds"]` so the deployed pod gets your key — and
+Kitaru resolves that secret even for **local** runs, so it must exist or the
+chatbot flow fails to compile (`No secret found with name 'llm-creds'`). Put
+whichever key you have into it:
+
+```bash
+kitaru secrets set llm-creds --ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+# or, for OpenAI:
+# kitaru secrets set llm-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
+```
+
+**2) Two model aliases** `strong` and `cheap` (used by Exercises 3/4/5/7),
+pointing at *your* provider. Model IDs use `provider/model` format:
+
+```bash
+# Anthropic (cohort default)
+kitaru model register strong --model anthropic/claude-sonnet-4-5 --secret llm-creds
+kitaru model register cheap  --model anthropic/claude-haiku-4-5  --secret llm-creds
+# …or OpenAI
+# kitaru model register strong --model openai/gpt-5.2    --secret llm-creds
+# kitaru model register cheap  --model openai/gpt-5-nano --secret llm-creds
 ```
 
 (Any two models of different cost tiers work — the point is the price gap.
 Ollama users: `ollama/qwen3.5` works too.)
 
-Also create a **secret** named `openai-creds` holding your key. The chatbot
-(Exercise 6) declares `secret_environment_from=["openai-creds"]` so the deployed
-pod gets the key — and Kitaru resolves that secret even for **local** runs, so
-the secret must exist or the chatbot flow fails to compile with
-`No secret found with name 'openai-creds'`:
-
-```bash
-kitaru secrets set openai-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
-```
-
-(Anthropic users: add `--ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"` too. You can
-bind the aliases above to it with `--secret openai-creds` on `model register`,
-but exercises 2–5 also fall back to the key in your shell environment.)
+Exercises 2 and 6 use a PydanticAI agent whose model is read from the
+`WORKSHOP_MODEL` env var, defaulting to `anthropic:claude-sonnet-4-5`. OpenAI
+users: `export WORKSHOP_MODEL=openai:gpt-5.2` (or any model your key supports).
 
 ## 5. Smoke test
 

@@ -11,9 +11,15 @@ pydantic-ai is too new and breaks the adapter import.
 (Verified against kitaru 0.15.0 / pydantic-ai-slim 1.103.0)
 """
 
+import os
+
 from pydantic_ai import Agent
 
 from kitaru.adapters.pydantic_ai import KitaruAgent
+
+# Provider-neutral: defaults to Anthropic (this cohort), override for OpenAI etc.
+# e.g. export WORKSHOP_MODEL=openai:gpt-5.2
+MODEL = os.getenv("WORKSHOP_MODEL", "anthropic:claude-sonnet-4-5")
 
 # --- a tiny "20 years of project knowledge" archive --------------------------
 
@@ -39,7 +45,7 @@ ARCHIVE = {
 
 
 agent = Agent(
-    "openai:gpt-5.2",  # any provider works; alias-based routing shown in Ex. 3
+    MODEL,  # any provider; set WORKSHOP_MODEL to switch. Alias routing shown in Ex. 3
     system_prompt=(
         "You answer questions about the firm's past projects. Use the "
         "search_archive tool. Every claim MUST cite the source filename in "

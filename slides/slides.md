@@ -117,11 +117,16 @@ kitaru init && kitaru login                  # starts a local server
 kitaru status                                # should say: running
 ```
 
-For Modules 2–4 (needs one LLM key), register two model aliases:
+For Modules 2–4 (needs one LLM key — **Anthropic or OpenAI**), register two
+aliases pointing at *your* provider:
 
 ```bash
-kitaru model register strong --model openai/gpt-5.2   --secret <your-key-secret>
-kitaru model register cheap  --model openai/gpt-5-nano --secret <your-key-secret>
+# Anthropic (default for this cohort)
+kitaru model register strong --model anthropic/claude-sonnet-4-5  --secret llm-creds
+kitaru model register cheap  --model anthropic/claude-haiku-4-5   --secret llm-creds
+# …or OpenAI
+# kitaru model register strong --model openai/gpt-5.2    --secret llm-creds
+# kitaru model register cheap  --model openai/gpt-5-nano --secret llm-creds
 ```
 
 *Tried Kitaru/ZenML before? `kitaru clean all` first to wipe stale local state.*
@@ -193,7 +198,7 @@ Don't guess. Don't A/B on your users. Replay your own history.
 ```python
 from kitaru.adapters.pydantic_ai import KitaruAgent
 
-agent = Agent("openai:gpt-5.2", system_prompt="...")   # the agent you already have
+agent = Agent("anthropic:claude-sonnet-4-5", system_prompt="...")  # your agent, any provider
 
 durable_agent = KitaruAgent(agent, name="office_assistant", checkpoint_strategy="calls")
 ```

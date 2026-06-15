@@ -25,19 +25,23 @@ upgrade). One PydanticAI agent with a single `say_and_wait` tool:
 | `drive_local.py` | Scripted non-interactive driver (flow in background thread, input from foreground) |
 | `history_artifacts.py` | Helpers to pick the best `history` artifact for session rehydration |
 
-> **Prerequisite (local *and* deployed):** create the `openai-creds` secret.
-> `chatbot.py` sets `secret_environment_from=["openai-creds"]` on its image, and
+> **Prerequisite (local *and* deployed):** create the `llm-creds` secret.
+> `chatbot.py` sets `secret_environment_from=["llm-creds"]` on its image, and
 > Kitaru resolves that secret even for **local** runs — without it the flow fails
-> to compile with `No secret found with name 'openai-creds'`. One-time:
+> to compile with `No secret found with name 'llm-creds'`. One-time (use your
+> provider's key):
 > ```bash
-> kitaru secrets set openai-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
+> kitaru secrets set llm-creds --ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+> # or: kitaru secrets set llm-creds --OPENAI_API_KEY="$OPENAI_API_KEY"
 > ```
+> The model defaults to `anthropic:claude-sonnet-4-5`; OpenAI users set
+> `WORKSHOP_MODEL=openai:gpt-4o-mini` (locally, and in the pod env at deploy).
 
 ## How to run (three ways, from the upstream README)
 
 1. **Deployed + Gradio UI** (production-shaped, what the instructor demos):
    `kitaru deploy chatbot.py:chatbot --tag prod --stack <remote-stack> --exclusive`,
-   the `openai-creds` secret for the pod's `OPENAI_API_KEY`, then `python ui.py`.
+   the `llm-creds` secret for the pod's key, then `python ui.py`.
 2. **Direct terminal**: `python chatbot.py` — quick interactive smoke test.
 3. **Scripted**: `python drive_local.py` — background flow + foreground driver.
    The driver tolerates the LLM ending the chat early (extra scripted messages
