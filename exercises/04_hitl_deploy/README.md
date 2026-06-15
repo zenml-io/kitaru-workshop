@@ -30,9 +30,15 @@ money and a legal relationship: a human signs off, full stop.
 
 ## Part B — ship it
 
+Deploy straight from the CLI — no script needed (the `<file>:<flow>` target is
+the same pattern as the chatbot in Module 3):
+
 ```bash
-python approval_flow.py --deploy
+kitaru deploy approval_flow.py:counter_offer --tag prod --stack <remote-stack> --exclusive
 ```
+
+(Equivalent in-script path if you prefer: `python approval_flow.py --deploy`,
+which just calls `counter_offer.deploy()`.)
 
 - Deployments are **immutable, versioned snapshots** of your flow.
 - Tag-based canary/rollback: point the `production` tag at v2; if it misbehaves,

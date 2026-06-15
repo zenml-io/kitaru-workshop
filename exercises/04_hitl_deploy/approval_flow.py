@@ -9,7 +9,8 @@ Requires: an LLM key + alias "strong".
 Run:      python approval_flow.py
 Approve:  kitaru executions input <EXEC_ID> --value true
           kitaru executions resume <EXEC_ID>
-Deploy:   python approval_flow.py --deploy
+Deploy:   kitaru deploy approval_flow.py:counter_offer --tag prod --stack <stack>
+          (or the in-script equivalent: python approval_flow.py --deploy)
 """
 
 import argparse
